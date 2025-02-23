@@ -34,22 +34,37 @@ class BaseTransformer(ABC):
 
 @dataclass
 class ExtractNewColumn(BaseTransformer):
-    """ Extract specfic data point from extracted dataframe and create new column """
+    """ Extract specfic data from extracted dataframe and create new column.
+    
+    Args:
+        name (str): Name of new column.
+        regex (str): Regular expression used to extract data point.
+        regex_columns (list[str]): Column names to apply regex on.
+        include_next_row (bool): Whether to concat next row text with current
+            row text. May make it easier for extraction. Defaults to False.
+    """
     name: str
     regex: str
     regex_columns: List[str] = None
+    include_next_row: bool = False
     processors: List[Callable] = None
 
     def transform(self, df: pd.DataFrame, **kwargs) -> pd.DataFrame:
 
-        # apply regex to specific column or whole lines
+        # combine column text
         if self.regex_columns:
             lines = _get_lines(df[self.regex_columns])
-            out = lines.str.extract(self.regex)#.dropna().values
         else:
             lines = _get_lines(df)
-            out = lines.str.extract(self.regex)#.dropna()#.values
+            
+        # concat next row text with current row text
+        if self.include_next_row:
+            lines = lines + '\n' + lines.shift(-1)
         
+        # apply regex to text
+        out = lines.str.extract(self.regex)
+        
+        # forward fill extracted text
         df[self.name] = out.ffill()
 
         return df

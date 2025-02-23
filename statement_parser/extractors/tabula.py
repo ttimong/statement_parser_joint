@@ -169,7 +169,12 @@ class UobCard(TabulaBaseExtractor):
     _tabula_kwargs = {'columns': [100, 145, 450]}
     _column_names = ['PostDate', 'TransactionDate', 'Description', 'Amount']
     _transformers = [
-        ExtractNewColumn('AccountName', r'^UOB (.*)$', regex_columns=_column_names[:3]),
+        ExtractNewColumn(
+            name='AccountName',
+            regex=r'^(.*)\n\d{4}\-\d{4}\-\d{4}\-\d{4} .*',
+            regex_columns=_column_names[:3],
+            include_next_row=True,
+        ),
         ExtractNewColumn('AccountNumber', r'^(\d{4}\-\d{4}\-\d{4}\-\d{4}) .*', regex_columns=_column_names[:3]),
         ExtractMeta(
             key='stmt_date',

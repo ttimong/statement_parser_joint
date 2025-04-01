@@ -13,6 +13,8 @@ def upload_file():
         pdf_files = request.files.getlist('pdf_files')
 
         match bank, statement_type:
+            case 'Citibank', 'Cards':
+                extractor = CitiCard()
             case 'DBS', 'CASA':
                 extractor = DbsCasa()
             case 'DBS', 'Cards':
@@ -25,6 +27,8 @@ def upload_file():
                 extractor = UobCasa()
             case 'UOB', 'Cards':
                 extractor = UobCard()
+            case _:
+                raise ValueError(f'Unknown {bank=}, {statement_type=} combi!')
 
         df = extractor.extract_files(pdf_files)
 

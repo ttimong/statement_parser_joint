@@ -1,6 +1,7 @@
 from enum import StrEnum
 
 class BankName(StrEnum):
+    CITI = 'Citibank'
     DBS = 'DBS'
     OCBC = 'OCBC'
     UOB = 'UOB'

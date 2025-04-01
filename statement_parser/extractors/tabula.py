@@ -52,6 +52,36 @@ class TabulaBaseExtractor(BaseExtractor):
 ###############################################################################
 
 
+class CitiCard(TabulaBaseExtractor):
+    _bank_name = BankName.CITI
+    _statement_type = StatementType.CARD
+    _tabula_kwargs = {'columns': [90, 490]}
+    _column_names = ['DATE', 'DESCRIPTION', 'AMOUNT (SGD)']
+    _transformers = [
+        ExtractNewColumn(
+            name='AccountName',
+            regex=r'^(.*) \d{4} \d{4} \d{4} \d{4} .*',
+            regex_columns=['DATE', 'DESCRIPTION'],
+        ),
+        ExtractNewColumn(
+            name='AccountNumber',
+            regex=r'.* (\d{4} \d{4} \d{4} \d{4}) .*',
+            regex_columns=['DATE', 'DESCRIPTION'],
+        ),
+        ExtractMeta(
+            key='stmt_date',
+            regex=r'Statement Date (.* \d{1,2}, \d{4})$',
+            regex_columns=['DESCRIPTION', 'AMOUNT (SGD)'],
+            processors=[lambda x: pd.to_datetime(x, format='%B %d, %Y')[0]],
+        ),
+        ColumnsProcess([
+            DateColumn('DATE', format='%d %b', drop_null=True),
+            StringColumn('DESCRIPTION'),
+            NumericColumn('AMOUNT (SGD)'),
+        ]),
+    ]
+
+
 class DbsCard(TabulaBaseExtractor):
     _bank_name = BankName.DBS
     _statement_type = StatementType.CARD

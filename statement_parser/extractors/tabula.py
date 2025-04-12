@@ -55,7 +55,7 @@ class TabulaBaseExtractor(BaseExtractor):
 class CitiCard(TabulaBaseExtractor):
     _bank_name = BankName.CITI
     _statement_type = StatementType.CARD
-    _tabula_kwargs = {'columns': [90, 490]}
+    _tabula_kwargs = {'columns': [90, 500]}
     _column_names = ['DATE', 'DESCRIPTION', 'AMOUNT (SGD)']
     _transformers = [
         ExtractNewColumn(

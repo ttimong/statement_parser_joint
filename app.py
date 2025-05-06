@@ -11,6 +11,7 @@ def upload_file():
         bank = request.form['bank']
         statement_type = request.form['statement_type']
         pdf_files = request.files.getlist('pdf_files')
+        download_name = request.form['download_file_name']
 
         match bank, statement_type:
             case 'Citibank', 'Cards':
@@ -42,7 +43,7 @@ def upload_file():
             io.BytesIO(csv_buffer.getvalue().encode('utf-8')),
             mimetype='text/csv',
             as_attachment=True,
-            download_name='bank_statements.csv'
+            download_name=download_name,
         )
 
     return render_template('index.html')

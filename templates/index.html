@@ -67,7 +67,15 @@
             $('#upload-form').on('submit', function(event) {
                 event.preventDefault();
                 
+                // Prompt the user for the file name
+                var downloadFileName = prompt("Enter the file for the downloaded CSV (e.g. my_statement.csv):", "bank_statements.csv");
+                if (!downloadFileName) {
+                    alert("File name is required to proceed.");
+                    return; // Stop submission if no file name is provided
+                }
+                
                 var formData = new FormData(this);
+                formData.append('download_file_name', downloadFileName); // Append the file name to the form data
                 $('#spinner-container').show();
                 
                 $.ajax({
@@ -87,7 +95,7 @@
                         var url = URL.createObjectURL(blob);
                         var a = document.createElement('a');
                         a.href = url;
-                        a.download = 'bank_statements.csv';
+                        a.download = downloadFileName; // Use the user-provided file name
                         document.body.appendChild(a);
                         a.click();
                         document.body.removeChild(a);

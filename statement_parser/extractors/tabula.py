@@ -70,9 +70,9 @@ class CitiCard(TabulaBaseExtractor):
         ),
         ExtractMeta(
             key='stmt_date',
-            regex=r'Statement Date (.* \d{1,2}, \d{4})$',
+            regex=r'Statement Date (.* \d{1,2},\s?\d{4})$',
             regex_columns=['DESCRIPTION', 'AMOUNT (SGD)'],
-            processors=[lambda x: pd.to_datetime(x, format='%B %d, %Y')[0]],
+            processors=[lambda x: x.str.replace(r',(\d)', r', \1', regex=True), lambda x: pd.to_datetime(x, format='%B %d, %Y')[0]],
         ),
         ColumnsProcess([
             DateColumn('DATE', format='%d %b', drop_null=True),

@@ -56,28 +56,28 @@ class CitiCard(TabulaBaseExtractor):
     _bank_name = BankName.CITI
     _statement_type = StatementType.CARD
     _tabula_kwargs = {'columns': [90, 500]}
-    _column_names = ['DATE', 'DESCRIPTION', 'AMOUNT (SGD)']
+    _column_names = ['TransactionDate', 'Description', 'Amount']
     _transformers = [
         ExtractNewColumn(
             name='AccountName',
             regex=r'^(.*) \d{4} \d{4} \d{4} \d{4} .*',
-            regex_columns=['DATE', 'DESCRIPTION'],
+            regex_columns=['TransactionDate', 'Description'],
         ),
         ExtractNewColumn(
             name='AccountNumber',
             regex=r'.* (\d{4} \d{4} \d{4} \d{4}) .*',
-            regex_columns=['DATE', 'DESCRIPTION'],
+            regex_columns=['TransactionDate', 'Description'],
         ),
         ExtractMeta(
             key='stmt_date',
             regex=r'Statement Date (.* \d{1,2},\s?\d{4})$',
-            regex_columns=['DESCRIPTION', 'AMOUNT (SGD)'],
+            regex_columns=['Description', 'Amount'],
             processors=[lambda x: x.str.replace(r',(\d)', r', \1', regex=True), lambda x: pd.to_datetime(x, format='%B %d, %Y')[0]],
         ),
         ColumnsProcess([
-            DateColumn('DATE', format='%d %b', drop_null=True),
-            StringColumn('DESCRIPTION'),
-            NumericColumn('AMOUNT (SGD)'),
+            DateColumn('TransactionDate', format='%d %b', drop_null=True),
+            StringColumn('Description'),
+            NumericColumn('Amount'),
         ]),
     ]
 
